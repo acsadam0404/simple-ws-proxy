@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Swarm WebSocket communication demo</title>
+<script src="sockjs-0.3.4.js"></script>
+<script src="stomp.js"></script>
+<script type="text/javascript">
+	var ws;
+
+	function connect() {
+		 ws = new WebSocket("ws://swarm.betconstruct.com:8086");
+	     ws.onopen = function() {
+	        ws.send('{"command": "request_session", "params": { "language": "arm", "site_id": 702 }}');
+	     };
+	     ws.onmessage = function (evt) { 
+	    	 console.log(evt.data);
+	     };
+	     ws.onclose = function() { 
+	     };
+	}
+</script>
+</head>
+<body>
+	<noscript>
+		<h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being enabled. Please enable Javascript and reload this page!</h2>
+	</noscript>
+	<div>
+		<div>
+			<button id="connect" onclick="connect();">Connect</button>
+			<button id="disconnect" disabled="disabled" onclick="disconnect();">Disconnect</button>
+		</div>
+		<div id="conversationDiv">
+			<label>json message: </label><input type="text" id="message" />
+			<button id="sendSwarmRequest" onclick="ws.send(document.getElementById('message').value);">Send</button>
+			
+			<p id="response"></p>
+		</div>
+		
+		{"command": "request_session", "params": { "language": "arm", "site_id": 702 }} </br>
+		{"command": "get", "params": { "source": "betting", "what": {"sport": []}, "where": {}, "subscribe": false }}
+		
+	</div>
+</body>
+</html>
