@@ -11,6 +11,30 @@ apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'eclipse'
 apply plugin: 'spring-boot'
+apply plugin: 'war'
+
+
+allprojects {
+	apply plugin: 'eclipse-wtp'
+}
+
+
+
+bootRepackage {
+	/* disabled bootRepackage otherwise explicit main method is required */
+	enabled = false
+}
+
+war {
+	baseName = 'mcb-backend-war'
+	version =  '0.1.0-SNAPSHOT'
+}
+
+jar {
+	baseName = 'mcb-backend'
+	version =  '0.1.0-SNAPSHOT'
+}
+
 
 sourceSets {
 	main {
@@ -19,12 +43,23 @@ sourceSets {
 	 }
   }
 
-jar {
-	baseName = 'mcb-backend'
-	version =  '0.1.0-SNAPSHOT'
-}
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
+
+
+eclipse {
+	project {
+		/* if it is not present gradle won't set up webapp nature */
+		natures 'org.eclipse.wst.common.modulecore.ModuleCoreNature'
+	}
+	wtp{
+		facet {
+			facet name: 'java', version: sourceCompatibility
+			facet name: 'jst.web', version: '3.1'
+		}
+	}
+}
 
 repositories {
 	mavenLocal()
