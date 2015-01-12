@@ -8,5 +8,5 @@ import groovy.transform.Immutable
 @Immutable
 class BettingOption {
 	BigDecimal stake
-	int number
+	String name
 }

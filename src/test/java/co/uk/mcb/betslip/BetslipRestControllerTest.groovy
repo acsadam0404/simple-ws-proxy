@@ -2,6 +2,8 @@ package co.uk.mcb.betslip
 
 import org.junit.Test
 
+import co.uk.mcb.betslip.Selection as S
+import co.uk.mcb.betslip.BettingOption as BO
 
 class BetslipRestControllerTest {
 	BetslipRestController brc  = new BetslipRestController()
@@ -18,32 +20,19 @@ class BetslipRestControllerTest {
 		assert 0 == brc.calcSingle(null)
 		assert 0 == brc.calcSingle([])
 		
-		assert 30 == brc.calcSingle([new Selection(odds: 10, stake: 3)])
+		assert 30 == brc.calcSingle([new S(odds: 10, stake: 3)])
 		assert 48.6030 == brc.calcSingle([
-			new Selection(id: "", odds: 4.10, stake: 2.43),
-			new Selection(id: "", odds: 2, stake: 1.32),
-			new Selection(id: "", odds: 7.20, stake: 5)
+			new S(id: "", odds: 4.10, stake: 2.43),
+			new S(id: "", odds: 2, stake: 1.32),
+			new S(id: "", odds: 7.20, stake: 5)
 		])
 	}
 	
 	@Test
-	void permutations() {
-		def ar = ["A", "B", "C"]
-		println "permutations"
-		ar.eachPermutation {
-			print it
-		}
-		println "combinations"
-		ar.eachCombination {
-			print it
-		}
-		println "permutations()"
-		ar.permutations().each {
-			print it
-		}
-		
+	void pairs() {
+		assert brc.pairs(['A', 'B', 'C']) == [['A', 'B'], ['A', 'C'], ['B', 'C']]
+		assert brc.pairs(['A', 'B', 'C', 'D']) == [['A', 'B'], ['A', 'C'], ['A', 'D'], ['B', 'C'], ['B', 'D'], ['C', 'D']]
 	}
-
 
 
 	@Test
@@ -53,39 +42,79 @@ class BetslipRestControllerTest {
 		
 		/* no stake on bettingoption */
 		assert 0 == brc.calcAccumulator([
-			new Selection(odds: 2.00),
-			new Selection(odds: 5.00)
-		], new BettingOption(number: 2))
+			new S(odds: 2.00),
+			new S(odds: 5.00)
+		], new BO(number: 2))
 		
-		/* two selections but not a double */
+		/* two Ss but not a double */
 		assert 0 == brc.calcAccumulator([
-			new Selection(odds: 2.00),
-			new Selection(odds: 5.00)
-		], new BettingOption(number: 1, stake: 1))
+			new S(odds: 2.00),
+			new S(odds: 5.00)
+		], new BO(number: 1, stake: 1))
 		
 		/* singles shouldnt be calculated */
 		assert 0 == brc.calcAccumulator([
-			new Selection(odds: 2.00)
-		], new BettingOption(number: 2, stake: 1))
+			new S(odds: 2.00)
+		], new BO(number: 2, stake: 1))
 		
 		
 		assert 10 == brc.calcAccumulator([
-			new Selection(odds: 2.00),
-			new Selection(odds: 5.00)
-		], new BettingOption(number: 2, stake: 1))
+			new S(odds: 2.00),
+			new S(odds: 5.00)
+		], new BO(number: 2, stake: 1))
 
 		assert 30 == brc.calcAccumulator([
-			new Selection(odds: 2.00),
-			new Selection(odds: 5.00)
-		], new BettingOption(number: 2, stake: 3))
+			new S(odds: 2.00),
+			new S(odds: 5.00)
+		], new BO(number: 2, stake: 3))
 
+		
+		assert 437.47 == brc.calcAccumulator([
+			new S(odds: 2.06),
+			new S(odds: 3.70),
+			new S(odds: 3.15),
+			new S(odds: 1.47),
+			new S(odds: 1.85),
+			new S(odds: 3.35)
+		], new BO(stake: 2, number : 6)).round(2)
+		
 	}
 	
 	@Test
 	void calcSpecial() {
 		assert 0 == brc.calcSpecial([
-			new Selection(odds: 2.00),
-			new Selection(odds: 5.00)
-		], new BettingOption(number: 2, stake: 3))
+			new S(odds: 2.00),
+			new S(odds: 5.00)
+		], new BO(number: 2, stake: 3))
 	}
+	
+	
+	@Test
+	void calcDouble() {
+		assert 51.8060 == brc.calcDouble([
+			new S(odds: 2.08),
+			new S(odds: 3.70),
+			new S(odds: 3.15)
+		], new BO(stake: 2, number : 2))
+		
+		assert 183.97 == brc.calcDouble([
+			new S(odds: 2.08),
+			new S(odds: 3.70),
+			new S(odds: 7.40),
+			new S(odds: 3.15)
+		], new BO(stake: 2, number : 2))
+	}
+	
+	
+	@Test
+	void calcTrixie() {
+		assert 105.35 == brc.calcTrixie([
+			new S(odds: 2.04),
+			new S(odds: 3.75),
+			new S(odds: 3.35)
+		], new BO(stake: 2, number : 3)).round()
+		
+	}
+	
+	
 }
