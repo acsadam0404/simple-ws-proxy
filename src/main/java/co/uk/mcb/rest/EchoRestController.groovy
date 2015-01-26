@@ -1,5 +1,6 @@
 package co.uk.mcb.rest
 
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseBody
@@ -15,13 +16,23 @@ class EchoRestController {
 	@RequestMapping("/echo")
 	@ResponseBody
 	String echo(@RequestParam("message") String message) {
-		return message
+		message
 	}
 
 	@RequestMapping("/ping")
 	@ResponseBody
 	String ping() {
-		return "pong"
+		"pong"
+	}
+	
+	@RequestMapping("/json")
+	@ResponseBody
+	DummyJsonWrapper json(@RequestBody DummyJsonWrapper json) {
+		new DummyJsonWrapper(message: "received $json.message")
+	}
+	
+	static class DummyJsonWrapper {
+		String message
 	}
 	
 }
